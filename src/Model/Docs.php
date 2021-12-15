@@ -4,6 +4,7 @@ declare (strict_types=1);
 namespace App\Plugins\Docs\src\Model;
 
 use App\Model\Model;
+use App\Plugins\User\src\Models\User;
 use Carbon\Carbon;
 
 /**
@@ -30,11 +31,15 @@ class Docs extends Model
      *
      * @var array
      */
-    protected $fillable = ['id','class_id','user_id','title','content','markdown','quanxian','created_at', 'updated_at'];
+    protected $fillable = ['id','class_id','user_id','title','content','markdown','created_at', 'updated_at'];
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = ['id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+
+    public function user(){
+        return $this->belongsTo(User::class,'user_id','id');
+    }
 }

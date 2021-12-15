@@ -16,7 +16,6 @@ class CreateDocsTable extends Migration
             $table->string("class_id");
             $table->string("user_id");
             $table->text("title");
-            $table->string('quanxian');
             $table->longText('content');
             $table->longText('markdown');
             $table->timestamps();

@@ -3,6 +3,7 @@
 namespace App\Plugins\Docs\src\Controllers;
 
 use App\Plugins\Core\src\Handler\UploadHandler;
+use App\Plugins\Docs\src\Model\Docs;
 use App\Plugins\Docs\src\Model\DocsClass;
 use App\Plugins\Docs\src\Request\CreateClassRequest;
 use App\Plugins\User\src\Models\UserClass;
@@ -44,4 +45,28 @@ class IndexController
         ]);
         return redirect()->url('/docs')->with("success",'创建成功!')->go();
     }
+
+    #[GetMapping(path:"create/{id}")]
+    public function create($id){
+        if(!DocsClass::query()->where('id',$id)->exists()){
+            return admin_abort("页面不存在",404);
+        }
+        $user_id = (int)DocsClass::query()->where('id',$id)->first()->user_id;
+        if(auth()->id()!==$user_id || !Authority()->check("docs_create")){
+            return admin_abort("无权限",401);
+        }
+        $data = DocsClass::query()->where('id',$id)->first();
+        return view("Docs::create",['data' => $data]);
+    }
+
+    #[GetMapping(path:"/docs/{id}")]
+    public function show($id){
+        if(!DocsClass::query()->where('id',$id)->exists()){
+            return admin_abort('页面不存在',404);
+        }
+        $data = DocsClass::query()->where('id',$id)->first();
+        $page = Docs::query()->where("class_id",$id)->with("user")->paginate(15);
+        return view("Docs::show",['data' => $data,'page' => $page]);
+    }
+
 }
