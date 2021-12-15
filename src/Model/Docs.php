@@ -39,7 +39,13 @@ class Docs extends Model
      */
     protected $casts = ['id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
 
-    public function user(){
+    public function user(): \Hyperf\Database\Model\Relations\BelongsTo
+    {
         return $this->belongsTo(User::class,'user_id','id');
+    }
+
+    public function docsClass(): \Hyperf\Database\Model\Relations\BelongsTo
+    {
+        return $this->belongsTo(DocsClass::class,'class_id','id');
     }
 }

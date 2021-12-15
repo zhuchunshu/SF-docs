@@ -65,8 +65,27 @@ class IndexController
             return admin_abort('页面不存在',404);
         }
         $data = DocsClass::query()->where('id',$id)->first();
+        if(!in_array(auth()->data()->class_id, json_decode($data->quanxian, true, 512, JSON_THROW_ON_ERROR), true)){
+            return admin_abort('无权查看',401);
+        }
         $page = Docs::query()->where("class_id",$id)->with("user")->paginate(15);
         return view("Docs::show",['data' => $data,'page' => $page]);
+    }
+
+    #[GetMapping(path:"/docs/{class_id}/{id}.html")]
+    public function showDocs($class_id,$id){
+        if(!DocsClass::query()->where('id',$class_id)->exists()){
+            return admin_abort('页面不存在',404);
+        }
+        $data = DocsClass::query()->where('id',$class_id)->first();
+        if(!in_array(auth()->data()->class_id, json_decode($data->quanxian, true, 512, JSON_THROW_ON_ERROR), true)){
+            return admin_abort('无权查看',401);
+        }
+        if(!Docs::query()->where(['id' => $id,'class_id' => $class_id])->exists()){
+            return admin_abort('页面不存在',404);
+        }
+        $data = Docs::query(true)->where('id',$id)->with(['user','docsClass'])->first();
+        return view("Docs::showDocs",['data' => $data]);
     }
 
 }

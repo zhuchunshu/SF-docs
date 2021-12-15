@@ -11,7 +11,7 @@ use Hyperf\HttpServer\Annotation\PostMapping;
 #[Controller(prefix:"/api/docs")]
 class ApiController
 {
-    #[PostMapping(path:"getDocs")]
+    ##[PostMapping(path:"getDocs")]
     public function getDocs(){
         $class_id = request()->input('id');
         if(!$class_id){

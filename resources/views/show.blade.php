@@ -84,7 +84,3 @@
 
 @endsection
 
-@section('scripts')
-    <script>var docs_class_id = {{$data->id}};</script>
-    <script src="{{file_hash("plugins/Docs/js/docs.js")}}"></script>
-@endsection
