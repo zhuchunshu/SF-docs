@@ -51,7 +51,7 @@
                                                 创建于:{{format_date($data->created_at)}}
                                             </p>
                                         </div>
-                                        <div class="card-footer">
+                                        <div class="card-footer" id="vue-docs-class-show-footer">
                                             @if(auth()->check())
                                                 @if(auth()->id()===(int)$data->user_id && Authority()->check("docs_create"))
                                                     <a href="/docs/create/{{$data->id}}" class="btn btn-dark">发布文档</a>
@@ -62,6 +62,16 @@
                                                             <line x1="5.7" y1="5.7" x2="18.3" y2="18.3"></line>
                                                         </svg>无权发布</button>
                                                 @endif
+                                                    @if(auth()->id()===(int)$data->user_id && Authority()->check("docs_edit"))
+                                                        <a href="/docs/editClass/{{$data->id}}" class="btn btn-dark">修改文档</a>
+                                                        @elseif(Authority()->check("admin_docs_edit"))
+                                                        <a href="/docs/editClass/{{$data->id}}" class="btn btn-dark">修改文档</a>
+                                                    @endif
+                                                    @if(auth()->id()===(int)$data->user_id && Authority()->check("docs_delete"))
+                                                        <button class="btn btn-dark" @@click="docs_delete_class">删除此分类</button>
+                                                    @elseif(Authority()->check("admin_docs_delete"))
+                                                        <button class="btn btn-dark" @@click="docs_delete_class">删除此分类</button>
+                                                    @endif
                                             @else
                                                 <a href="/login" class="btn btn-dark">登陆</a>
                                                 <a href="/register" class="btn btn-light">注册</a>
@@ -84,3 +94,7 @@
 
 @endsection
 
+@section('scripts')
+    <script>var docs_class_id = {{$data->id}};</script>
+    <script src="{{file_hash("plugins/Docs/js/docs.js")}}"></script>
+@endsection

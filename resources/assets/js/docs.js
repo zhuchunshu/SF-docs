@@ -18790,25 +18790,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vditor__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(vditor__WEBPACK_IMPORTED_MODULE_2__);
 
 
-
-
-if (document.getElementById("docs-content")) {
-  var previewElement = document.getElementById("docs-content");
-  vditor__WEBPACK_IMPORTED_MODULE_2___default().mermaidRender(previewElement);
-  vditor__WEBPACK_IMPORTED_MODULE_2___default().abcRender(previewElement);
-  vditor__WEBPACK_IMPORTED_MODULE_2___default().chartRender(previewElement);
-  vditor__WEBPACK_IMPORTED_MODULE_2___default().mindmapRender(previewElement);
-  vditor__WEBPACK_IMPORTED_MODULE_2___default().graphvizRender(previewElement);
-  vditor__WEBPACK_IMPORTED_MODULE_2___default().mathRender(previewElement);
-  vditor__WEBPACK_IMPORTED_MODULE_2___default().mediaRender(previewElement);
-  vditor__WEBPACK_IMPORTED_MODULE_2___default().highlightRender({
-    lineNumber: true,
-    enable: true
-  }, previewElement);
-  vditor__WEBPACK_IMPORTED_MODULE_2___default().flowchartRender(previewElement);
-  vditor__WEBPACK_IMPORTED_MODULE_2___default().plantumlRender(previewElement);
-} // 发布文档
-
+ // 发布文档
 
 if (document.getElementById("docs-create")) {
   var create_topic_vue = {
@@ -18998,6 +18980,318 @@ if (document.getElementById("docs-create")) {
     }
   };
   Vue.createApp(create_topic_vue).mount("#docs-create");
+}
+
+if (document.getElementById("vue-docs-class-show-footer")) {
+  var app = {
+    data: function data() {
+      return {};
+    },
+    methods: {
+      docs_delete_class: function docs_delete_class() {
+        swal({
+          title: "确定要删除此文档分类吗?",
+          icon: "warning",
+          text: "删除后无法恢复,且此分类下的所有文档都会被清空!",
+          buttons: true
+        }).then(function (r) {
+          if (r) {
+            axios__WEBPACK_IMPORTED_MODULE_0___default().post("/api/docs/classDelete", {
+              _token: csrf_token,
+              class_id: docs_class_id
+            }).then(function (r) {
+              var data = r.data;
+
+              if (data.success) {
+                izitoast__WEBPACK_IMPORTED_MODULE_1___default().success({
+                  title: "Success",
+                  message: data.result.msg,
+                  position: "topRight"
+                });
+                setTimeout(function () {
+                  location.href = "/docs";
+                }, 1200);
+              } else {
+                izitoast__WEBPACK_IMPORTED_MODULE_1___default().error({
+                  title: "Error",
+                  message: data.result.msg,
+                  position: "topRight"
+                });
+              }
+            })["catch"](function (e) {
+              izitoast__WEBPACK_IMPORTED_MODULE_1___default().error({
+                title: "Error",
+                message: "请求出错,详细查看控制台",
+                position: "topRight"
+              });
+              console.error(e);
+            });
+          }
+        });
+      }
+    }
+  };
+  Vue.createApp(app).mount("#vue-docs-class-show-footer");
+}
+
+if (document.getElementById("docs-app")) {
+  var _app = {
+    data: function data() {
+      return {};
+    },
+    mounted: function mounted() {
+      if (document.getElementById("docs-content")) {
+        var previewElement = document.getElementById("docs-content");
+        vditor__WEBPACK_IMPORTED_MODULE_2___default().mermaidRender(previewElement);
+        vditor__WEBPACK_IMPORTED_MODULE_2___default().abcRender(previewElement);
+        vditor__WEBPACK_IMPORTED_MODULE_2___default().chartRender(previewElement);
+        vditor__WEBPACK_IMPORTED_MODULE_2___default().mindmapRender(previewElement);
+        vditor__WEBPACK_IMPORTED_MODULE_2___default().graphvizRender(previewElement);
+        vditor__WEBPACK_IMPORTED_MODULE_2___default().mathRender(previewElement);
+        vditor__WEBPACK_IMPORTED_MODULE_2___default().mediaRender(previewElement);
+        vditor__WEBPACK_IMPORTED_MODULE_2___default().highlightRender({
+          lineNumber: true,
+          enable: true
+        }, previewElement);
+        vditor__WEBPACK_IMPORTED_MODULE_2___default().flowchartRender(previewElement);
+        vditor__WEBPACK_IMPORTED_MODULE_2___default().plantumlRender(previewElement);
+      }
+    },
+    methods: {
+      docs_delete: function docs_delete(docs_id) {
+        swal({
+          title: "确定要删除此文档吗?",
+          icon: "warning",
+          text: "删除后无法恢复!",
+          buttons: true
+        }).then(function (r) {
+          if (r) {
+            axios__WEBPACK_IMPORTED_MODULE_0___default().post("/api/docs/docsDelete", {
+              _token: csrf_token,
+              id: docs_id
+            }).then(function (r) {
+              var data = r.data;
+
+              if (data.success) {
+                izitoast__WEBPACK_IMPORTED_MODULE_1___default().success({
+                  title: "Success",
+                  message: data.result.msg,
+                  position: "topRight"
+                });
+                setTimeout(function () {
+                  location.href = "/docs/" + docs_class_id;
+                }, 1200);
+              } else {
+                izitoast__WEBPACK_IMPORTED_MODULE_1___default().error({
+                  title: "Error",
+                  message: data.result.msg,
+                  position: "topRight"
+                });
+              }
+            })["catch"](function (e) {
+              izitoast__WEBPACK_IMPORTED_MODULE_1___default().error({
+                title: "Error",
+                message: "请求出错,详细查看控制台",
+                position: "topRight"
+              });
+              console.error(e);
+            });
+          }
+        });
+      }
+    }
+  };
+  Vue.createApp(_app).mount("#docs-app");
+} // 修改文档
+
+
+if (document.getElementById("docs-edit")) {
+  var _app2 = {
+    data: function data() {
+      return {
+        vditor: '',
+        title: '',
+        docs: {},
+        edit: {
+          mode: "ir",
+          preview: {
+            mode: "editor"
+          }
+        }
+      };
+    },
+    methods: {
+      submit: function submit() {
+        var html = this.vditor.getHTML();
+        var markdown = this.vditor.getValue();
+        var title = this.title;
+
+        if (!title) {
+          izitoast__WEBPACK_IMPORTED_MODULE_1___default().error({
+            title: 'Error',
+            position: 'topRight',
+            message: '标题不能为空'
+          });
+          return;
+        }
+
+        if (!html || !markdown) {
+          izitoast__WEBPACK_IMPORTED_MODULE_1___default().error({
+            title: 'Error',
+            position: 'topRight',
+            message: '正文内容不能为空'
+          });
+          return;
+        }
+
+        axios__WEBPACK_IMPORTED_MODULE_0___default().post("/api/docs/edit", {
+          _token: csrf_token,
+          id: docs_id,
+          title: this.title,
+          html: html,
+          markdown: markdown
+        }).then(function (r) {
+          var data = r.data;
+
+          if (!data.success) {
+            data.result.forEach(function (value) {
+              izitoast__WEBPACK_IMPORTED_MODULE_1___default().error({
+                title: "error",
+                message: value,
+                position: "topRight",
+                timeout: 10000
+              });
+            });
+          } else {
+            data.result.forEach(function (value) {
+              izitoast__WEBPACK_IMPORTED_MODULE_1___default().success({
+                title: "success",
+                message: value,
+                position: "topRight",
+                timeout: 10000
+              });
+            });
+            setTimeout(function () {
+              location.href = "/docs/" + docs_class_id + "/" + docs_id + ".html";
+            }, 2000);
+          }
+        })["catch"](function (e) {
+          console.error(e);
+          izitoast__WEBPACK_IMPORTED_MODULE_1___default().error({
+            title: 'Error',
+            position: 'topRight',
+            message: '请求出错,详细查看控制台'
+          });
+        });
+      },
+      init: function init() {
+        var _this3 = this;
+
+        // vditor
+        this.vditor = new (vditor__WEBPACK_IMPORTED_MODULE_2___default())('docs-editor', {
+          height: 400,
+          toolbarConfig: {
+            pin: true
+          },
+          cache: {
+            enable: false
+          },
+          preview: {
+            markdown: {
+              toc: true,
+              mark: true,
+              autoSpace: true
+            }
+          },
+          mode: this.edit.mode,
+          toolbar: ["emoji", "headings", "bold", "italic", "strike", "link", "|", "list", "ordered-list", "outdent", "indent", "|", "quote", "line", "code", "inline-code", "insert-before", "insert-after", "|", "upload", "record", "table", "|", "undo", "redo", "|", "fullscreen", "edit-mode"],
+          counter: {
+            "enable": true,
+            "type": "已写字数"
+          },
+          hint: {
+            extend: [{
+              key: '@',
+              hint: function hint(key) {
+                return _this3.userAtList;
+              }
+            }, {
+              key: '$',
+              hint: function hint(key) {
+                return _this3.topic_keywords;
+              }
+            }]
+          },
+          upload: {
+            accept: 'image/*,.wav',
+            token: csrf_token,
+            url: imageUpUrl,
+            linkToImgUrl: imageUpUrl,
+            filename: function filename(name) {
+              return name.replace(/[^(a-zA-Z0-9\u4e00-\u9fa5\.)]/g, '').replace(/[\?\\/:|<>\*\[\]\(\)\$%\{\}@~]/g, '').replace('/\\s/g', '');
+            }
+          },
+          typewriterMode: true,
+          placeholder: "请输入正文",
+          after: function after() {
+            axios__WEBPACK_IMPORTED_MODULE_0___default().post("/api/docs/editDocsData", {
+              _token: csrf_token,
+              id: docs_id
+            }).then(function (r) {
+              var data = r.data;
+
+              if (data.success) {
+                var result = data.result;
+                _this3.title = result.title;
+
+                _this3.vditor.setValue(result.markdown);
+              } else {
+                izitoast__WEBPACK_IMPORTED_MODULE_1___default().error({
+                  title: "Error",
+                  message: data.result.msg,
+                  position: "topRight"
+                });
+              }
+            })["catch"](function (e) {
+              izitoast__WEBPACK_IMPORTED_MODULE_1___default().error({
+                title: "Error",
+                message: "请求出错,详细查看控制台",
+                position: "topRight"
+              });
+              console.error(e);
+            });
+            axios__WEBPACK_IMPORTED_MODULE_0___default().post("/api/user/@user_list", {
+              _token: csrf_token
+            }).then(function (r) {
+              _this3.userAtList = r.data;
+            })["catch"](function (e) {
+              swal({
+                title: "获取本站用户列表失败,详细查看控制台",
+                icon: "error"
+              });
+              console.error(e);
+            });
+            axios__WEBPACK_IMPORTED_MODULE_0___default().post("/api/topic/keywords", {
+              _token: csrf_token
+            }).then(function (r) {
+              _this3.topic_keywords = r.data;
+            })["catch"](function (e) {
+              swal({
+                title: "获取话题列表失败,详细查看控制台",
+                icon: "error"
+              });
+              console.error(e);
+            });
+          },
+          input: function input(md) {}
+        });
+      }
+    },
+    mounted: function mounted() {
+      this.init();
+    }
+  };
+  Vue.createApp(_app2).mount("#docs-edit");
 }
 })();
 

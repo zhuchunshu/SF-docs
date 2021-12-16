@@ -6,6 +6,7 @@ use App\Plugins\Core\src\Handler\UploadHandler;
 use App\Plugins\Docs\src\Model\Docs;
 use App\Plugins\Docs\src\Model\DocsClass;
 use App\Plugins\Docs\src\Request\CreateClassRequest;
+use App\Plugins\Docs\src\Request\EditClassRequest;
 use App\Plugins\User\src\Models\UserClass;
 use Hyperf\HttpServer\Annotation\Controller;
 use Hyperf\HttpServer\Annotation\GetMapping;
@@ -59,13 +60,97 @@ class IndexController
         return view("Docs::create",['data' => $data]);
     }
 
-    #[GetMapping(path:"/docs/{id}")]
+    #[GetMapping(path:"edit/{id}")]
+    public function edit($id)
+    {
+        if (!Docs::query()->where('id', $id)->exists()) {
+            return admin_abort("页面不存在", 404);
+        }
+        $user_id = (int)Docs::query()->where('id', $id)->first()->user_id;
+        $quanxian = false;
+        if (auth()->id() === $user_id || Authority()->check("docs_edit")) {
+            $quanxian = true;
+        }
+
+        if (Authority()->check("admin_docs_edit")) {
+            $quanxian = true;
+        }
+
+        if (!$quanxian) {
+            return admin_abort("无权限", 401);
+        }
+        $data = Docs::query()->where('id',$id)->first();
+        return view("Docs::edit",['data' => $data]);
+    }
+
+    #[GetMapping(path:"editClass/{id}")]
+    public function edit_class($id){
+        if(!DocsClass::query()->where('id',$id)->exists()){
+            return admin_abort("页面不存在",404);
+        }
+        $user_id = (int)DocsClass::query()->where('id',$id)->first()->user_id;
+        $quanxian = false;
+        if (auth()->id()===$user_id || Authority()->check("docs_edit")) {
+            $quanxian = true;
+        }
+
+        if(Authority()->check("admin_docs_edit")) {
+            $quanxian = true;
+        }
+
+        if(!$quanxian){
+            return admin_abort("无权限",401);
+        }
+
+        $userClass = UserClass::query()->select('id','name','permission-value')->get();
+        $data = DocsClass::query()->where('id',$id)->first();
+        return view("Docs::edit_class",['data' => $data,'userClass' => $userClass]);
+    }
+
+    #[PostMapping(path:"editClass")]
+    public function edit_class_submit(EditClassRequest $request, UploadHandler $uploader){
+        $user_id = (int)DocsClass::query()->where('id',$request->input('class_id'))->first()->user_id;
+        $quanxian = false;
+        if (auth()->id()===$user_id || Authority()->check("docs_edit")) {
+            $quanxian = true;
+        }
+
+        if(Authority()->check("admin_docs_edit")) {
+            $quanxian = true;
+        }
+        if(!$quanxian){
+            return redirect()->back()->with("danger",'你所在的用户组无权修改文档')->go();
+        }
+        $path = $request->hasFile('icon');
+        if(!$path){
+            $path = DocsClass::query()->where("id",$request->input("class_id"))->first()->icon;
+        }else{
+            $path = $uploader->save($request->file("icon"),auth()->id())['path'];
+        }
+        $quanxian = json_encode($request->input('userClass'));
+        DocsClass::query()->where("id",$request->input("class_id"))->update([
+            'name' => $request->input('name'),
+            'icon' => $path,
+            'user_id' => auth()->id(),
+            'quanxian' => $quanxian
+        ]);
+        return redirect()->back()->with("success",'修改成功!')->go();
+    }
+
+    #[GetMapping(path:"{id}")]
     public function show($id){
         if(!DocsClass::query()->where('id',$id)->exists()){
             return admin_abort('页面不存在',404);
         }
         $data = DocsClass::query()->where('id',$id)->first();
-        if(!in_array(auth()->data()->class_id, json_decode($data->quanxian, true, 512, JSON_THROW_ON_ERROR), true)){
+        $quanxian = false;
+        if(in_array(auth()->data()->class_id, json_decode($data->quanxian, true, 512, JSON_THROW_ON_ERROR), true)){
+            $quanxian = true;
+        }
+        if((int)$data->user_id === auth()->id()){
+            $quanxian = true;
+        }
+        if(!$quanxian){
             return admin_abort('无权查看',401);
         }
         $page = Docs::query()->where("class_id",$id)->with("user")->paginate(15);
@@ -78,14 +163,23 @@ class IndexController
             return admin_abort('页面不存在',404);
         }
         $data = DocsClass::query()->where('id',$class_id)->first();
-        if(!in_array(auth()->data()->class_id, json_decode($data->quanxian, true, 512, JSON_THROW_ON_ERROR), true)){
+        $quanxian = false;
+        if(in_array(auth()->data()->class_id, json_decode($data->quanxian, true, 512, JSON_THROW_ON_ERROR), true)){
+            $quanxian = true;
+        }
+        if((int)$data->user_id === auth()->id()){
+            $quanxian = true;
+        }
+        if(!$quanxian){
             return admin_abort('无权查看',401);
         }
+
         if(!Docs::query()->where(['id' => $id,'class_id' => $class_id])->exists()){
             return admin_abort('页面不存在',404);
         }
         $data = Docs::query(true)->where('id',$id)->with(['user','docsClass'])->first();
         return view("Docs::showDocs",['data' => $data]);
     }
+
 
 }

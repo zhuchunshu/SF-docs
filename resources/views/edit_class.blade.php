@@ -1,26 +1,32 @@
 @extends('Core::app')
-@section('title','创建文档')
+@section('title','修改文档【 '.$data->name.'】')
 @section('content')
 
     <div class="row row-cards justify-content-center">
         <div class="col-md-10">
             <div class="border-0 card card-body">
-                <h3 class="card-title">创建文档</h3>
-                <form action="/docs/create.class?Redirect=/docs/create.class" method="post" enctype="multipart/form-data">
+                <h3 class="card-title">修改文档 【{{$data->name}}】</h3>
+                <form action="/docs/editClass?Redirect=/docs/editClass/{{$data->id}}" method="post" enctype="multipart/form-data">
                     <x-csrf/>
+                    <input type="hidden" name="class_id" value="{{$data->id}}">
                     <div class="mb-3">
                         <label class="form-label">文档名</label>
-                        <input type="text" class="form-control" name="name" required>
+                        <input type="text" value="{{$data->name}}" class="form-control" name="name" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">图标</label>
-                        <input type="file" accept="image/gif, image/png, image/jpeg, image/jpg" class="form-control" name="icon" required>
+                        <label class="form-label">图标 当前: <span class="avatar" style="background-image: url('{{$data->icon}}')"></span> </label>
+                        <input type="file" accept="image/gif, image/png, image/jpeg, image/jpg" class="form-control" name="icon">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">哪些用户组可看?</label>
                         <select name="userClass[]" id="" class="form-select" multiple>
-                            @foreach($userClass as $data)
-                                <option value="{{$data->id}}">{{$data->name}} 「权限值:{{$data['permission-value']}}」</option>
+                            @php $quanxian = json_decode($data->quanxian) @endphp
+                            @foreach($userClass as $value)
+                               @if(in_array($value->id,$quanxian))
+                                    <option value="{{$value->id}}" selected>{{$value->name}} 「权限值:{{$value['permission-value']}}」</option>
+                                @else
+                                    <option value="{{$value->id}}">{{$value->name}} 「权限值:{{$value['permission-value']}}」</option>
+                                @endif
                             @endforeach
                         </select>
                     </div>
@@ -48,7 +54,7 @@
                             Overview
                         </div>
                         <h2 class="page-title">
-                            创建文档
+                            修改文档 【{{$data->name}}】
                         </h2>
                     </div>
 
