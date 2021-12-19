@@ -5,7 +5,6 @@ namespace App\Plugins\Docs;
 /**
  * @version 1.0.0
  * @package 文档
- * @description 文档插件
  * @name Docs
  * @author Inkedus
  * @link https://github.com/zhuchunshu/super-forum-docs
