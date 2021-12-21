@@ -144,13 +144,23 @@ class IndexController
         }
         $data = DocsClass::query()->where('id',$id)->first();
         $quanxian = false;
-        if(in_array(auth()->data()->class_id, json_decode($data->quanxian, true, 512, JSON_THROW_ON_ERROR), true)){
+        $arr = json_decode($data->quanxian, true, 512, JSON_THROW_ON_ERROR);
+        if(in_array(auth()->data()->class_id, $arr)){
             $quanxian = true;
         }
+
         if((int)$data->user_id === auth()->id()){
             $quanxian = true;
         }
-        if(!$quanxian){
+
+        $p_quanxian = true;
+        foreach (UserClass::query()->get() as $value){
+            if(!in_array((int)$value->id, $arr)){
+                $p_quanxian = false;
+            }
+        }
+
+        if(!$quanxian && !$p_quanxian){
             return admin_abort('无权查看',401);
         }
         $page = Docs::query()->where("class_id",$id)->with("user")->paginate(15);
@@ -164,13 +174,20 @@ class IndexController
         }
         $data = DocsClass::query()->where('id',$class_id)->first();
         $quanxian = false;
-        if(in_array(auth()->data()->class_id, json_decode($data->quanxian, true, 512, JSON_THROW_ON_ERROR), true)){
+        $arr = json_decode($data->quanxian, true, 512, JSON_THROW_ON_ERROR);
+        if(in_array(auth()->data()->class_id,$arr)){
             $quanxian = true;
         }
         if((int)$data->user_id === auth()->id()){
             $quanxian = true;
         }
-        if(!$quanxian){
+        $p_quanxian = true;
+        foreach (UserClass::query()->get() as $value){
+            if(!in_array((int)$value->id, $arr)){
+                $p_quanxian = false;
+            }
+        }
+        if(!$quanxian && !$p_quanxian){
             return admin_abort('无权查看',401);
         }
 
