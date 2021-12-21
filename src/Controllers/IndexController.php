@@ -145,7 +145,7 @@ class IndexController
         $data = DocsClass::query()->where('id',$id)->first();
         $quanxian = false;
         $arr = json_decode($data->quanxian, true, 512, JSON_THROW_ON_ERROR);
-        if(in_array(auth()->data()->class_id, $arr)){
+        if(@in_array(auth()->data()->class_id, $arr)){
             $quanxian = true;
         }
 
@@ -175,7 +175,7 @@ class IndexController
         $data = DocsClass::query()->where('id',$class_id)->first();
         $quanxian = false;
         $arr = json_decode($data->quanxian, true, 512, JSON_THROW_ON_ERROR);
-        if(in_array(auth()->data()->class_id,$arr)){
+        if(@in_array(auth()->data()->class_id,$arr)){
             $quanxian = true;
         }
         if((int)$data->user_id === auth()->id()){
