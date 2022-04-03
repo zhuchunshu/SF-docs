@@ -1,9 +1,9 @@
-@extends('Core::app')
+@extends('App::app')
 @section('title','修改文档【 '.$data->name.'】')
 @section('content')
 
     <div class="row row-cards justify-content-center">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="border-0 card card-body">
                 <h3 class="card-title">修改文档 【{{$data->name}}】</h3>
                 <form action="/docs/editClass?Redirect=/docs/editClass/{{$data->id}}" method="post" enctype="multipart/form-data">
@@ -29,6 +29,19 @@
                                 @endif
                             @endforeach
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-check form-switch">
+                            @if((bool)$data->public===true)
+                                <input name="public" class="form-check-input"
+                                       type="checkbox" checked>
+                            @else
+                                <input name="public" class="form-check-input"
+                                       type="checkbox">
+                            @endif
+                            <span
+                                    class="form-check-label">允许所有人可看</span>
+                        </label>
                     </div>
                     <div class="mb-3">
                         <button class="btn btn-primary" type="submit">提交</button>

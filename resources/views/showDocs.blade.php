@@ -1,11 +1,11 @@
-@extends('Core::app')
+@extends('App::app')
 @section('title','「'.$data->title.'」的文档内容')
 @section('content')
 
     <div class="row row-cards justify-content-center">
-        <div class="col-md-10" id="docs-app">
+        <div class="col-md-12" id="docs-app">
             <div class="row row-cards justify-content-center">
-                <div class="col-md-7">
+                <div class="col-md-9">
                     <div class="row row-cards justify-content-center">
                         <div class="border-0 card">
                             <div class="card-body topic">
@@ -114,11 +114,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-3">
                     <div class="row row-cards rd">
                         <div class="col-md-12 sticky" style="top: 105px">
                             <div class="row row-cards">
-                                <div class="col-md-10">
+                                <div class="col-md-12">
                                     <div class="card">
                                         <div class="card-status-top bg-primary"></div>
                                         <div class="card-body">

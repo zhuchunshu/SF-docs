@@ -1,11 +1,11 @@
-@extends('Core::app')
+@extends('App::app')
 @section('title','「'.$data->name.'」的文档信息')
 @section('content')
 
     <div class="row row-cards justify-content-center">
-        <div class="col-md-10" id="docs-app">
+        <div class="col-md-12" id="docs-app">
             <div class="row row-cards justify-content-center">
-                <div class="col-md-7">
+                <div class="col-md-9">
                     <div class="row row-cards justify-content-center">
                         @if($page->count())
                             @foreach($page as $value)
@@ -36,11 +36,11 @@
                         {!! make_page($page) !!}
                     </div>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-3">
                     <div class="row row-cards rd">
                         <div class="col-md-12 sticky" style="top: 105px">
                             <div class="row row-cards">
-                                <div class="col-md-10">
+                                <div class="col-md-12">
                                     <div class="card">
                                         <div class="card-status-top bg-primary"></div>
                                         <div class="card-body">
@@ -63,14 +63,14 @@
                                                         </svg>无权发布</button>
                                                 @endif
                                                     @if(auth()->id()===(int)$data->user_id && Authority()->check("docs_edit"))
-                                                        <a href="/docs/editClass/{{$data->id}}" class="btn btn-dark">修改文档</a>
+                                                        <a href="/docs/editClass/{{$data->id}}" class="btn btn-dark">修改</a>
                                                         @elseif(Authority()->check("admin_docs_edit"))
-                                                        <a href="/docs/editClass/{{$data->id}}" class="btn btn-dark">修改文档</a>
+                                                        <a href="/docs/editClass/{{$data->id}}" class="btn btn-dark">修改</a>
                                                     @endif
                                                     @if(auth()->id()===(int)$data->user_id && Authority()->check("docs_delete"))
-                                                        <button class="btn btn-dark" @@click="docs_delete_class">删除此分类</button>
+                                                        <button class="btn btn-dark" @@click="docs_delete_class">删除</button>
                                                     @elseif(Authority()->check("admin_docs_delete"))
-                                                        <button class="btn btn-dark" @@click="docs_delete_class">删除此分类</button>
+                                                        <button class="btn btn-dark" @@click="docs_delete_class">删除</button>
                                                     @endif
                                             @else
                                                 <a href="/login" class="btn btn-dark">登陆</a>
@@ -93,6 +93,34 @@
 
 
 @endsection
+
+@section('header')
+    <div class="page-wrapper">
+        <div class="container-xl">
+            <!-- Page title -->
+            <div class="page-header d-print-none">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <!-- Page pre-title -->
+                        <div class="page-pretitle">
+                            Overview
+                        </div>
+                        <h2 class="page-title">
+                            「{{$data->name}}」文档内容
+                        </h2>
+                    </div>
+
+                    <div class="col-auto">
+                        <a href="/docs/create/{{$data->id}}" class="btn btn-dark">发布文档</a>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
 
 @section('scripts')
     <script>var docs_class_id = {{$data->id}};</script>

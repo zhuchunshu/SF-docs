@@ -1,9 +1,9 @@
-@extends('Core::app')
+@extends('App::app')
 @section('title','在「'.$data->name.'」下发布文档')
 @section('content')
 
     <div class="row row-cards justify-content-center">
-        <div class="col-md-10" id="docs-create">
+        <div class="col-md-12" id="docs-create">
             <div class="border-0 card card-body">
                 <h3 class="card-title">发布文档</h3>
                 <form method="post" enctype="multipart/form-data" @@submit.prevent="submit">

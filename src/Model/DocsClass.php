@@ -29,7 +29,7 @@ class DocsClass extends Model
      *
      * @var array
      */
-    protected $fillable = ['id','name','icon','quanxian','user_id','created_at','updated_at'];
+    protected $fillable = ['id','name','icon','quanxian','user_id','public','created_at','updated_at'];
 
     /**
      * The attributes that should be cast to native types.

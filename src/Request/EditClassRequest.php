@@ -20,7 +20,8 @@ class EditClassRequest extends FormRequest
             "class_id" => "required|exists:docs_class,id",
             "name" => "required|string|max:25|min:2|unique:docs_class,name,".$this->input("class_id"),
             "icon" => "nullable",
-            "userClass" => "required|array"
+            "userClass" => "required|array",
+	        'public' => "nullable"
         ];
     }
 
@@ -30,7 +31,8 @@ class EditClassRequest extends FormRequest
             "class_id" => "文档分类id",
             "name" => "文档名称",
             "icon" => "文档图标",
-            "userClass" => "可查看的用户组"
+            "userClass" => "可查看的用户组",
+	        "public" => "公开属性"
         ];
     }
 }

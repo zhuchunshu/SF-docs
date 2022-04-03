@@ -1,11 +1,11 @@
-@extends('Core::app')
+@extends('App::app')
 @section('title','本站文档')
 @section('content')
 
     <div class="row row-cards justify-content-center">
-        <div class="col-md-10">
+        <div class="col-md-12">
             <div class="row row-cards justify-content-center">
-                <div class="col-md-7">
+                <div class="col-md-9">
                     <div class="row row-cards justify-content-center">
                         @if($page->count())
                             @foreach($page as $data)
@@ -18,11 +18,9 @@
                                                 </div>
                                                 <div class="col">
                                                     <a href="/docs/{{$data->id}}" class="card-title text-reset" style="font-size:18px;font-weight: bold">{{$data->name}}</a>
+                                                    由 <a href="/users/{{$data->user->username}}.html">{{$data->user->username}}</a> 创建于: <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{$data->created_at}}">{{format_date($data->created_at)}}</span>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            由 <a href="/users/{{$data->user->username}}.html">{{$data->user->username}}</a> 创建于: <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{$data->created_at}}">{{format_date($data->created_at)}}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -37,11 +35,11 @@
                         {!! make_page($page) !!}
                     </div>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-3">
                     <div class="row row-cards rd">
                         <div class="col-md-12 sticky" style="top: 105px">
                             <div class="row row-cards">
-                                <div class="col-md-10">
+                                <div class="col-md-12">
                                     <div class="card">
                                         <div class="card-status-top bg-primary"></div>
                                         <div class="card-body">
@@ -77,3 +75,29 @@
 
 @endsection
 
+@section('header')
+    <div class="page-wrapper">
+        <div class="container-xl">
+            <!-- Page title -->
+            <div class="page-header d-print-none">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <!-- Page pre-title -->
+                        <div class="page-pretitle">
+                            Overview
+                        </div>
+                        <h2 class="page-title">
+                            本站文档
+                        </h2>
+                    </div>
+
+                    <div class="col-auto">
+                        <a href="/docs/create.class" class="btn btn-dark">创建文档</a>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection

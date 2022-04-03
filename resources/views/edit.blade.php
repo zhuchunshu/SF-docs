@@ -1,9 +1,9 @@
-@extends('Core::app')
+@extends('App::app')
 @section('title','修改「'.$data->title.'」文档')
 @section('content')
 
     <div class="row row-cards justify-content-center">
-        <div class="col-md-10" id="docs-edit">
+        <div class="col-md-12" id="docs-edit">
             <div class="border-0 card card-body">
                 <h3 class="card-title">修改文档</h3>
                 <form method="post" enctype="multipart/form-data" @@submit.prevent="submit">

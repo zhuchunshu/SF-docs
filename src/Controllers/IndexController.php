@@ -38,11 +38,17 @@ class IndexController
         }
         $path = $uploader->save($request->file("icon"),auth()->id())['path'];
         $quanxian = json_encode($request->input('userClass'));
+	    if($request->input('public',false)=="on"){
+		    $public = true;
+	    }else{
+		    $public = false;
+	    }
         DocsClass::query()->create([
             'name' => $request->input('name'),
             'icon' => $path,
             'user_id' => auth()->id(),
-            'quanxian' => $quanxian
+            'quanxian' => $quanxian,
+	        'public' => $public
         ]);
         return redirect()->url('/docs')->with("success",'创建成功!')->go();
     }
@@ -128,11 +134,17 @@ class IndexController
             $path = $uploader->save($request->file("icon"),auth()->id())['path'];
         }
         $quanxian = json_encode($request->input('userClass'));
+		if($request->input('public',false)=="on"){
+			$public = true;
+		}else{
+			$public = false;
+		}
         DocsClass::query()->where("id",$request->input("class_id"))->update([
             'name' => $request->input('name'),
             'icon' => $path,
             'user_id' => auth()->id(),
-            'quanxian' => $quanxian
+            'quanxian' => $quanxian,
+	        'public' => $public
         ]);
         return redirect()->back()->with("success",'修改成功!')->go();
     }
@@ -145,13 +157,17 @@ class IndexController
         $data = DocsClass::query()->where('id',$id)->first();
         $quanxian = false;
         $arr = json_decode($data->quanxian, true, 512, JSON_THROW_ON_ERROR);
-        if(@in_array(auth()->data()->class_id, $arr)){
+        if(in_array(auth()->data()->class_id, $arr)){
             $quanxian = true;
         }
 
         if((int)$data->user_id === auth()->id()){
             $quanxian = true;
         }
+		
+		if(DocsClass::query()->where(['id'=>$id,'public' => true])->exists()){
+			$quanxian = true;
+		}
 
         $p_quanxian = true;
         foreach (UserClass::query()->get() as $value){
@@ -175,12 +191,15 @@ class IndexController
         $data = DocsClass::query()->where('id',$class_id)->first();
         $quanxian = false;
         $arr = json_decode($data->quanxian, true, 512, JSON_THROW_ON_ERROR);
-        if(@in_array(auth()->data()->class_id,$arr)){
+        if(in_array(auth()->data()->class_id,$arr)){
             $quanxian = true;
         }
         if((int)$data->user_id === auth()->id()){
             $quanxian = true;
         }
+	    if(DocsClass::query()->where(['id'=>$id,'public' => true])->exists()){
+		    $quanxian = true;
+	    }
         $p_quanxian = true;
         foreach (UserClass::query()->get() as $value){
             if(!in_array((int)$value->id, $arr)){
