@@ -132,7 +132,7 @@
                                         <div class="card-footer">
                                             @if(auth()->check())
                                                 @if(auth()->id()===(int)$data->user_id && Authority()->check("docs_create"))
-                                                    <a href="/docs/create/{{$data->id}}" class="btn btn-dark">发布文档</a>
+                                                    <a href="/docs/create/{{$data->docsClass->id}}" class="btn btn-dark">发布文档</a>
                                                 @else
                                                     <button class="btn btn-dark"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-ban" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
