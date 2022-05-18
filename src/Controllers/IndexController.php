@@ -19,7 +19,8 @@ class IndexController
     public function index()
     {
 	    [$docs] = $this->docsExtracted();
-	    return view("Docs::index",['docs' => $docs]);
+		[$docsAll] = $this->docsAllExtracted();
+	    return view("Docs::index",['docs' => $docs,'docsAll'=>$docsAll]);
     }
 
     #[GetMapping(path:"create.class")]
@@ -179,7 +180,8 @@ class IndexController
 			return redirect()->url('/docs/'.$id.'/'.Docs::query()->where("class_id",$id)->select('id','title','class_id')->first()->id.'.html')->go();
 		}
 	    [$docs] = $this->docsExtracted();
-	    return view("Docs::show",['data' => $data,'docs' => $docs,'docsT' => $docsT]);
+		[$docsAll] = $this->docsAllExtracted();
+	    return view("Docs::show",['data' => $data,'docs' => $docs,'docsT' => $docsT,'docsAll'=>$docsAll]);
     }
 
     #[GetMapping(path:"/docs/{class_id}/{id}.html")]
@@ -214,7 +216,10 @@ class IndexController
         }
         $data = Docs::query(true)->where('id',$id)->with(['user','docsClass'])->first();
 	    [$docs] = $this->docsExtracted();
-        return view("Docs::showDocs",['data' => $data,'docs'=>$docs]);
+		[$docsAll] = $this->docsAllExtracted();
+	    @$shang = @Docs::query()->where('class_id',$class_id)->where('id','<',$id)->select('title','id')->orderBy('id','desc')->first()?:null;
+	    @$xia = @Docs::query()->where('class_id',$class_id)->where('id','>',$id)->select('title','id')->orderBy('id','asc')->first()?:null;
+        return @view("Docs::showDocs",['data' => $data,'docs'=>$docs,'docsAll'=>$docsAll,@'shang'=>@$shang,@'xia'=>@$xia]);
     }
 	
 	/**
@@ -226,6 +231,20 @@ class IndexController
 		$docs = [];
 		foreach($class as $value) {
 			$docs[$value['id']]['docs'] = Docs::query()->where('class_id', $value['id'])->take(5)->select('id', 'title', 'class_id')->get();
+			$docs[$value['id']]['name'] = $value['name'];
+		}
+		return array($docs);
+	}
+	
+	/**
+	 * @return array
+	 */
+	public function docsAllExtracted(): array
+	{
+		$class = DocsClass::query()->select('id', 'name')->get()->toArray();
+		$docs = [];
+		foreach($class as $value) {
+			$docs[$value['id']]['docs'] = Docs::query()->where('class_id', $value['id'])->select('id', 'title', 'class_id')->get();
 			$docs[$value['id']]['name'] = $value['name'];
 		}
 		return array($docs);

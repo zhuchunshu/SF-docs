@@ -57,6 +57,49 @@
                     </div>
                 </div>
             </div>
+            <div class="mt-3">
+                <div class="border-0 card">
+                    <div class="card-body">
+                        <ul class="pagination ">
+
+                            @if ($shang)
+                                <li class="page-item page-prev">
+                                    <a class="page-link"
+                                       href="/docs/{{$data->class_id}}/{{$shang['id']}}.html">
+                                        <div class="page-item-subtitle">上一篇文档</div>
+                                        <div class="page-item-title">
+                                            {{ \Hyperf\Utils\Str::limit($shang['title'], 20, '...') }}</div>
+                                    </a>
+                                </li>
+                            @else
+                                <li class="page-item page-prev disabled">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
+                                        <div class="page-item-subtitle">上一篇文档</div>
+                                        <div class="page-item-title">暂无</div>
+                                    </a>
+                                </li>
+                            @endif
+                            @if ($xia)
+                                <li class="page-item page-next">
+                                    <a class="page-link"
+                                       href="/docs/{{$data->class_id}}/{{ $xia['id']  }}.html">
+                                        <div class="page-item-subtitle">下一篇文档</div>
+                                        <div class="page-item-title">
+                                            {{ \Hyperf\Utils\Str::limit($xia['title'], 20, '...') }}</div>
+                                    </a>
+                                </li>
+                            @else
+                                <li class="page-item page-next disabled">
+                                    <a class="page-link" href="#">
+                                        <div class="page-item-subtitle">下一篇文档</div>
+                                        <div class="page-item-title">暂无</div>
+                                    </a>
+                                </li>
+                            @endif
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

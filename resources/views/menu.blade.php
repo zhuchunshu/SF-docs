@@ -13,7 +13,7 @@
                 </a>
             </li>
         @endif
-        @foreach($docs as $id=>$data)
+        @foreach($docsAll as $id=>$data)
             @if(count($data['docs']))
                 <li class="nav-item">
                     <a href="#docs-menu-{{$id}}" class="nav-link" data-bs-toggle="collapse" aria-expanded="false">
@@ -55,3 +55,4 @@
         @endforeach
     </ul>
 </div>
+
