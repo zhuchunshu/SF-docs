@@ -14,11 +14,6 @@
                         <input type="text" class="form-control" name="name" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">图标</label>
-                        <input type="file" accept="image/gif, image/png, image/jpeg, image/jpg" class="form-control"
-                               name="icon" required>
-                    </div>
-                    <div class="mb-3">
                         <label class="form-label">哪些用户组可看?</label>
                         <select name="userClass[]" id="" class="form-select" multiple>
                             @foreach($userClass as $data)

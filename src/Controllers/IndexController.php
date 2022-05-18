@@ -16,10 +16,10 @@ use Hyperf\HttpServer\Annotation\PostMapping;
 class IndexController
 {
     #[GetMapping(path:"")]
-    public function index(): \Psr\Http\Message\ResponseInterface
+    public function index()
     {
-        $page = DocsClass::query()->with("user")->paginate(15);
-        return view("Docs::index",['page' => $page]);
+	    [$docs] = $this->docsExtracted();
+	    return view("Docs::index",['docs' => $docs]);
     }
 
     #[GetMapping(path:"create.class")]
@@ -36,7 +36,6 @@ class IndexController
         if(!Authority()->check("docs_create")){
             return redirect()->back()->with("danger",'你所在的用户组无权创建文档')->go();
         }
-        $path = $uploader->save($request->file("icon"),auth()->id())['path'];
         $quanxian = json_encode($request->input('userClass'));
 	    if($request->input('public',false)=="on"){
 		    $public = true;
@@ -45,7 +44,7 @@ class IndexController
 	    }
         DocsClass::query()->create([
             'name' => $request->input('name'),
-            'icon' => $path,
+            'icon' => '.',
             'user_id' => auth()->id(),
             'quanxian' => $quanxian,
 	        'public' => $public
@@ -127,12 +126,7 @@ class IndexController
         if(!$quanxian){
             return redirect()->back()->with("danger",'你所在的用户组无权修改文档')->go();
         }
-        $path = $request->hasFile('icon');
-        if(!$path){
-            $path = DocsClass::query()->where("id",$request->input("class_id"))->first()->icon;
-        }else{
-            $path = $uploader->save($request->file("icon"),auth()->id())['path'];
-        }
+	    $path = '.';
         $quanxian = json_encode($request->input('userClass'));
 		if($request->input('public',false)=="on"){
 			$public = true;
@@ -179,8 +173,13 @@ class IndexController
         if(!$quanxian && !$p_quanxian){
             return admin_abort('无权查看',401);
         }
-        $page = Docs::query()->where("class_id",$id)->with("user")->paginate(15);
-        return view("Docs::show",['data' => $data,'page' => $page]);
+		
+        $docsT = Docs::query()->where("class_id",$id)->select('id','title','class_id')->get();
+		if(count($docsT)){
+			return redirect()->url('/docs/'.$id.'/'.Docs::query()->where("class_id",$id)->select('id','title','class_id')->first()->id.'.html')->go();
+		}
+	    [$docs] = $this->docsExtracted();
+	    return view("Docs::show",['data' => $data,'docs' => $docs,'docsT' => $docsT]);
     }
 
     #[GetMapping(path:"/docs/{class_id}/{id}.html")]
@@ -214,8 +213,23 @@ class IndexController
             return admin_abort('页面不存在',404);
         }
         $data = Docs::query(true)->where('id',$id)->with(['user','docsClass'])->first();
-        return view("Docs::showDocs",['data' => $data]);
+	    [$docs] = $this->docsExtracted();
+        return view("Docs::showDocs",['data' => $data,'docs'=>$docs]);
     }
-
-
+	
+	/**
+	 * @return array
+	 */
+	public function docsExtracted(): array
+	{
+		$class = DocsClass::query()->select('id', 'name')->get()->toArray();
+		$docs = [];
+		foreach($class as $value) {
+			$docs[$value['id']]['docs'] = Docs::query()->where('class_id', $value['id'])->take(5)->select('id', 'title', 'class_id')->get();
+			$docs[$value['id']]['name'] = $value['name'];
+		}
+		return array($docs);
+	}
+	
+	
 }

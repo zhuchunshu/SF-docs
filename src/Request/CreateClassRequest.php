@@ -18,7 +18,6 @@ class CreateClassRequest extends FormRequest
     {
         return [
             "name" => "required|string|max:25|min:2|unique:docs_class,name",
-            "icon" => "required|image",
             "userClass" => "required|array"
         ];
     }
@@ -27,7 +26,6 @@ class CreateClassRequest extends FormRequest
     {
         return [
             "name" => "文档名称",
-            "icon" => "文档图标",
             "userClass" => "可查看的用户组"
         ];
     }

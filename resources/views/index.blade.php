@@ -1,77 +1,50 @@
 @extends('App::app')
 @section('title','本站文档')
+
 @section('content')
 
-    <div class="row row-cards justify-content-center">
-        <div class="col-md-12">
-            <div class="row row-cards justify-content-center">
-                <div class="col-md-9">
-                    <div class="row row-cards justify-content-center">
-                        @if($page->count())
-                            @foreach($page as $data)
-                                <div class="col-md-12">
-                                    <div class="border-0 card card-body">
-                                        <div class="col-md-12">
-                                            <div class="row">
-                                                <div class="col col-auto">
-                                                    <a href="/docs/{{$data->id}}"><span class="avatar" style="background-image:url({{$data->icon}})"></span></a>
-                                                </div>
-                                                <div class="col">
-                                                    <a href="/docs/{{$data->id}}" class="card-title text-reset" style="font-size:18px;font-weight: bold">{{$data->name}}</a>
-                                                    由 <a href="/users/{{$data->user->username}}.html">{{$data->user->username}}</a> 创建于: <span data-bs-toggle="tooltip" data-bs-placement="top" title="{{$data->created_at}}">{{format_date($data->created_at)}}</span>
-                                                </div>
+            <div class="row gx-lg-5">
+                @include('Docs::menu')
+                <div class="col-lg-9">
+                    <div class="card card-lg">
+                        <div class="card-body">
+                            <div class="markdown">
+                                <div>
+                                    <div class="d-flex mb-3">
+                                        <h1 class="m-0">Documentation</h1>
+                                    </div>
+                                </div>
+                                <p>关于什么是文档，我也不想做太多介绍。总之，读了它，可以让你学到很多东西！</p>
+                                <div class="mt-4">
+                                    <div class="row">
+                                        @foreach($docs as $id => $data)
+                                            <div class="col-sm-6">
+                                                <h3><a class="text-linkedin" href="/docs/{{$id}}">#</a> {{$data['name']}}</h3>
+                                                <ul class="list-unstyled">
+                                                    @if(count($data['docs']))
+                                                        @foreach($data['docs'] as $doc)
+                                                            <li>
+                                                                - <a href="/docs/{{$id}}/{{$doc['id']}}.html">{{$doc['title']}}</a>
+                                                            </li>
+                                                        @endforeach
+                                                            <li>
+                                                                - <a href="/docs/{{$id}}">查看全部</a>
+                                                            </li>
+                                                    @else
+                                                        <li>
+                                                           - 暂无文档
+                                                        </li>
+                                                    @endif
+                                                </ul>
                                             </div>
-                                        </div>
+                                        @endforeach
                                     </div>
                                 </div>
-                            @endforeach
-                        @else
-                            <div class="col-md-12">
-                                <div class="border-0 card card-body">
-                                    <div class="text-center card-title">暂无内容</div>
-                                </div>
                             </div>
-                        @endif
-                        {!! make_page($page) !!}
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="row row-cards rd">
-                        <div class="col-md-12 sticky" style="top: 105px">
-                            <div class="row row-cards">
-                                <div class="col-md-12">
-                                    <div class="card">
-                                        <div class="card-status-top bg-primary"></div>
-                                        <div class="card-body">
-                                            <h3 class="card-title">
-                                                {{get_options("web_name")}}
-                                            </h3>
-                                            <p>
-                                                {{get_options("description","无描述")}}
-                                            </p>
-                                        </div>
-                                        <div class="card-footer">
-                                            @if(auth()->check())
-                                                <a href="/docs/create.class" class="btn btn-dark">创建文档</a>
-                                            @else
-                                                <a href="/login" class="btn btn-dark">登陆</a>
-                                                <a href="/register" class="btn btn-light">注册</a>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-                                @foreach(Itf()->get("index_right") as $value)
-                                    @include($value)
-                                @endforeach
-                            </div>
-
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
 
 @endsection
 
