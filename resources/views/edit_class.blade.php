@@ -14,20 +14,23 @@
                         <input type="text" value="{{$data->name}}" class="form-control" name="name" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">图标 当前: <span class="avatar" style="background-image: url('{{$data->icon}}')"></span> </label>
-                        <input type="file" accept="image/gif, image/png, image/jpeg, image/jpg" class="form-control" name="icon">
-                    </div>
-                    <div class="mb-3">
                         <label class="form-label">哪些用户组可看?</label>
                         <select name="userClass[]" id="" class="form-select" multiple>
-                            @php $quanxian = json_decode($data->quanxian) @endphp
-                            @foreach($userClass as $value)
-                               @if(in_array($value->id,$quanxian))
-                                    <option value="{{$value->id}}" selected>{{$value->name}} 「权限值:{{$value['permission-value']}}」</option>
-                                @else
-                                    <option value="{{$value->id}}">{{$value->name}} 「权限值:{{$value['permission-value']}}」</option>
-                                @endif
-                            @endforeach
+                           @if($data->quanxian!=="null")
+                                @php $quanxian = json_decode($data->quanxian) @endphp
+                                @foreach($userClass as $value)
+                                    @if(in_array($value->id,$quanxian))
+                                        <option value="{{$value->id}}" selected>{{$value->name}} 「权限值:{{$value['permission-value']}}」</option>
+                                    @else
+                                        <option value="{{$value->id}}">{{$value->name}} 「权限值:{{$value['permission-value']}}」</option>
+                                    @endif
+                                @endforeach
+                            @else
+                                @foreach($userClass as $data)
+                                    <option value="{{$data->id}}">{{$data->name}} 「权限值:{{$data['permission-value']}}」
+                                    </option>
+                                @endforeach
+                            @endif
                         </select>
                     </div>
                     <div class="mb-3">

@@ -114,7 +114,7 @@ class IndexController
     }
 
     #[PostMapping(path:"editClass")]
-    public function edit_class_submit(EditClassRequest $request, UploadHandler $uploader){
+    public function edit_class_submit(EditClassRequest $request){
         $user_id = (int)DocsClass::query()->where('id',$request->input('class_id'))->first()->user_id;
         $quanxian = false;
         if (auth()->id()===$user_id || Authority()->check("docs_edit")) {
@@ -125,9 +125,8 @@ class IndexController
             $quanxian = true;
         }
         if(!$quanxian){
-            return redirect()->back()->with("danger",'你所在的用户组无权修改文档')->go();
+            return redirect()->url('/docs/editClass/'.$request->input('class_id'))->with("danger",'你所在的用户组无权修改文档')->go();
         }
-	    $path = '.';
         $quanxian = json_encode($request->input('userClass'));
 		if($request->input('public',false)=="on"){
 			$public = true;
@@ -136,12 +135,11 @@ class IndexController
 		}
         DocsClass::query()->where("id",$request->input("class_id"))->update([
             'name' => $request->input('name'),
-            'icon' => $path,
             'user_id' => auth()->id(),
             'quanxian' => $quanxian,
 	        'public' => $public
         ]);
-        return redirect()->back()->with("success",'修改成功!')->go();
+        return redirect()->url('/docs/editClass/'.$request->input('class_id'))->with("success",'修改成功!')->go();
     }
 
     #[GetMapping(path:"{id}")]
@@ -151,10 +149,21 @@ class IndexController
         }
         $data = DocsClass::query()->where('id',$id)->first();
         $quanxian = false;
-        $arr = json_decode($data->quanxian, true, 512, JSON_THROW_ON_ERROR);
-        if(auth()->check() && @in_array(auth()->data()->class_id, $arr)){
+        if($data->quanxian!=="null"){
+            $p_quanxian = true;
+            $arr = json_decode($data->quanxian, true, 512, JSON_THROW_ON_ERROR);
+            if(auth()->check() && @in_array(auth()->data()->class_id, $arr)){
+                $quanxian = true;
+            }
+            foreach (UserClass::query()->get() as $value){
+                if(!in_array((int)$value->id, $arr)){
+                    $p_quanxian = false;
+                }
+            }
+        }else{
             $quanxian = true;
         }
+
 
         if((int)$data->user_id === auth()->id()){
             $quanxian = true;
@@ -164,12 +173,7 @@ class IndexController
 			$quanxian = true;
 		}
 
-        $p_quanxian = true;
-        foreach (UserClass::query()->get() as $value){
-            if(!in_array((int)$value->id, $arr)){
-                $p_quanxian = false;
-            }
-        }
+
 
         if(!$quanxian && !$p_quanxian){
             return admin_abort('无权查看',401);
@@ -191,21 +195,31 @@ class IndexController
         }
         $data = DocsClass::query()->where('id',$class_id)->first();
         $quanxian = false;
-        $arr = json_decode($data->quanxian, true, 512, JSON_THROW_ON_ERROR);
-        if(in_array(auth()->data()->class_id,$arr)){
+        if($data->quanxian!=="null"){
+            $arr = json_decode($data->quanxian, true, 512, JSON_THROW_ON_ERROR);
+            if(in_array(auth()->data()->class_id,$arr)){
+                $quanxian = true;
+            }
+        }else{
             $quanxian = true;
         }
+
         if((int)$data->user_id === auth()->id()){
             $quanxian = true;
         }
 	    if(DocsClass::query()->where(['id'=>$id,'public' => true])->exists()){
 		    $quanxian = true;
 	    }
-        $p_quanxian = true;
-        foreach (UserClass::query()->get() as $value){
-            if(!in_array((int)$value->id, $arr)){
-                $p_quanxian = false;
+
+        if($data->quanxian!=="null"){
+            $p_quanxian = true;
+            foreach (UserClass::query()->get() as $value){
+                if(!in_array((int)$value->id, $arr)){
+                    $p_quanxian = false;
+                }
             }
+        }else{
+            $quanxian = true;
         }
         if(!$quanxian && !$p_quanxian){
             return admin_abort('无权查看',401);

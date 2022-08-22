@@ -18,7 +18,7 @@ class CreateClassRequest extends FormRequest
     {
         return [
             "name" => "required|string|max:25|min:2|unique:docs_class,name",
-            "userClass" => "required|array"
+            "userClass" => "nullable|array"
         ];
     }
 

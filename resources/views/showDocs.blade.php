@@ -16,8 +16,64 @@
                         </h2>
                     </div>
 
-                    <div class="col-auto">
-                        <a href="/docs/create/{{$data->docsClass->id}}" class="btn btn-dark">发布文档</a>
+                    @if(auth()->id()===(int)$data->user_id && Authority()->check("docs_create"))
+                        <div class="col-auto mb-1">
+                            <a href="/docs/create/{{$data->docsClass->id}}" class="btn btn-dark">发布文档</a>
+                        </div>
+                    @endif
+
+                    <div class="col-auto mb-1">
+                        @if(auth()->id()===(int)$data->user_id && Authority()->check("docs_edit"))
+                            <a href="/docs/editClass/{{$data->id}}" class="btn btn-dark">修改分类</a>
+                        @elseif(Authority()->check("admin_docs_edit"))
+                            <a href="/docs/editClass/{{$data->id}}" class="btn btn-dark">修改分类</a>
+                        @endif
+                    </div>
+                    <div class="col-auto mb-1" id="vue-docs-class-show-footer">
+
+                        @if(auth()->id()===(int)$data->user_id && Authority()->check("docs_delete"))
+                            <button class="btn btn-dark" @@click="docs_delete_class">删除分类</button>
+                        @elseif(Authority()->check("admin_docs_delete"))
+                            <button class="btn btn-dark" @@click="docs_delete_class">删除分类</button>
+                        @endif
+                    </div>
+
+                    <div class="col-auto mb-1">
+                        @if((int)$data->user_id===auth()->id() && Authority()->check("docs_edit"))
+                            <a href="/docs/edit/{{$data->id}}" class="btn btn-dark">修改文档</a>
+                        @elseif(Authority()->check("admin_docs_edit"))
+                            <a href="/docs/edit/{{$data->id}}" class="btn btn-dark">修改文档</a>
+                        @endif
+
+                    </div>
+                    <div class="col-auto mb-1" id="docs-app">
+                        @if(auth()->check())
+                            @if((int)$data->user_id===auth()->id() && Authority()->check("docs_delete"))
+                                <button class="btn btn-dark" @@click="docs_delete({{$data->id}})">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <line x1="4" y1="7" x2="20" y2="7"></line>
+                                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                                        <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
+                                        <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
+                                    </svg>
+                                    删除文档
+                                </button>
+                            @elseif(Authority()->check("admin_docs_delete"))
+                                <button class="btn btn-dark" @@click="docs_delete({{$data->id}})">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <line x1="4" y1="7" x2="20" y2="7"></line>
+                                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                                        <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path>
+                                        <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>
+                                    </svg>
+                                    删除文档
+                                </button>
+                            @endif
+                        @endif
                     </div>
 
 
@@ -29,9 +85,11 @@
 
 
 @section('scripts')
+    <script>var docs_class_id = {{$data->docsClass->id}};</script>
+    <script src="{{file_hash("plugins/Docs/js/docs.js")}}"></script>
     <script>
         $(function () {
-            $('a[docs-menu="active"]').each(function(){
+            $('a[docs-menu="active"]').each(function () {
                 $(this).parents('ul').addClass('show');
             });
         })
@@ -47,7 +105,8 @@
                 <div class="mt-3 mx-3">
                     <ol class="breadcrumb breadcrumb-arrows" aria-label="breadcrumbs">
                         <li class="breadcrumb-item"><a href="/docs">文档</a></li>
-                        <li class="breadcrumb-item"><a href="/docs/{{$data->class_id}}">{{$data->docsClass->name}}</a></li>
+                        <li class="breadcrumb-item"><a href="/docs/{{$data->class_id}}">{{$data->docsClass->name}}</a>
+                        </li>
                         <li class="breadcrumb-item active" aria-current="page"><a href="#">{{$data->title}}</a></li>
                     </ol>
                 </div>

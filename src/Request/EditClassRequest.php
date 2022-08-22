@@ -19,7 +19,7 @@ class EditClassRequest extends FormRequest
         return [
             "class_id" => "required|exists:docs_class,id",
             "name" => "required|string|max:25|min:2|unique:docs_class,name,".$this->input("class_id"),
-            "userClass" => "required|array",
+            "userClass" => "nullable|array",
 	        'public' => "nullable"
         ];
     }

@@ -41,8 +41,6 @@ class ApiController
         $markdown = $request->input("markdown");
         $html = $request->input("html");
         $html = xss()->clean($html);
-        // 解析shortCode
-        $html = ShortCode()->handle($html);
         // 解析标签
         $html = $this->tag($html);
         // 解析艾特
@@ -77,8 +75,6 @@ class ApiController
         $markdown = $request->input("markdown");
         $html = $request->input("html");
         $html = xss()->clean($html);
-        // 解析shortCode
-        $html = ShortCode()->handle($html);
         // 解析标签
         $html = $this->tag($html);
         // 解析艾特

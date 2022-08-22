@@ -64,9 +64,11 @@
                         </h2>
                     </div>
 
-                    <div class="col-auto">
-                        <a href="/docs/create.class" class="btn btn-dark">创建文档</a>
-                    </div>
+                    @if(auth()->check() && Authority()->check('docs_create'))
+                        <div class="col-auto">
+                            <a href="/docs/create.class" class="btn btn-dark">创建文档</a>
+                        </div>
+                    @endif
 
 
                 </div>
