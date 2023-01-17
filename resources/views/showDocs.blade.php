@@ -24,9 +24,9 @@
 
                     <div class="col-auto mb-1">
                         @if(auth()->id()===(int)$data->user_id && Authority()->check("docs_edit"))
-                            <a href="/docs/editClass/{{$data->id}}" class="btn btn-dark">修改分类</a>
+                            <a href="/docs/editClass/{{$data->docsClass->id}}" class="btn btn-dark">修改分类</a>
                         @elseif(Authority()->check("admin_docs_edit"))
-                            <a href="/docs/editClass/{{$data->id}}" class="btn btn-dark">修改分类</a>
+                            <a href="/docs/editClass/{{$data->docsClass->id}}" class="btn btn-dark">修改分类</a>
                         @endif
                     </div>
                     <div class="col-auto mb-1" id="vue-docs-class-show-footer">

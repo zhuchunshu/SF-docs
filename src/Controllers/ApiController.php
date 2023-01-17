@@ -2,11 +2,14 @@
 
 namespace App\Plugins\Docs\src\Controllers;
 
+use App\Plugins\Core\src\Handler\UploadHandler;
 use App\Plugins\Docs\src\Model\Docs;
 use App\Plugins\Docs\src\Model\DocsClass;
 use App\Plugins\Docs\src\Request\CreateDocsRequest;
 use App\Plugins\Docs\src\Request\EditDocsRequest;
+use App\Plugins\User\src\Middleware\LoginMiddleware;
 use Hyperf\HttpServer\Annotation\Controller;
+use Hyperf\HttpServer\Annotation\Middleware;
 use Hyperf\HttpServer\Annotation\PostMapping;
 
 #[Controller(prefix:"/api/docs")]
@@ -27,6 +30,28 @@ class ApiController
         $classData = DocsClass::query()->where('id',$class_id)->with('user')->first();
         $page = Docs::query()->where("class_id",$class_id)->get();
         return Json_Api(200,true,['msg' => '加载成功!','classData' => $classData,'docs' => $page]);
+    }
+
+    #[PostMapping(path: 'upload/image')]
+    #[Middleware(LoginMiddleware::class)]
+    public function up_image(UploadHandler $uploader)
+    {
+        $data = [];
+        if(!Authority()->check('upload_file')){
+            return Json_Api(401,false,['msg' => '你所在的用户组无权上传图片']);
+        }
+        foreach (request()->file('file') as $key => $file) {
+            if($file->getSize()>get_options('core_user_up_img_size',2048)){
+                $result = $uploader->save($file, 'topic', auth()->id());
+                if ($result) {
+                    $url = $result['path'];
+                    $data['data']['succMap'][$url]=$url;
+                } else {
+                    (array)$data['data']['errFiles'][] = $key;
+                }
+            }
+        }
+        return $data;
     }
 
     // 发布文档

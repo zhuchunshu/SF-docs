@@ -10,9 +10,6 @@
                     <x-csrf/>
                     <div class="mb-3">
                         <div class="row">
-                            <div class="col col-auto">
-                                <span class="avatar" style="background-image: url('{{$data->docsClass->icon}}')"></span>
-                            </div>
                             <div class="col">
                                 <h3 class="text-reset text-black">{{$data->docsClass->name}}</h3>
                                 <span>创建于:{{format_date($data->docsClass->created_at)}}</span>
@@ -62,9 +59,9 @@
 @endsection
 
 @section('scripts')
-    <script>var docs_id = {{$data->id}}; var docs_class_id = {{$data->docsClass->id}}; var imageUpUrl = "/user/upload/image?_token={{ csrf_token() }}";</script>
+    <script>var docs_id = {{$data->id}}; var docs_class_id = {{$data->docsClass->id}}; var imageUpUrl = "/api/docs/upload/image?_token={{ csrf_token() }}";</script>
     <script src="{{file_hash("plugins/Docs/js/docs.js")}}"></script>
 @endsection
 @section('headers')
-    <link rel="stylesheet" href="{{ mix('plugins/Topic/css/app.css') }}">
+    <link rel="stylesheet" href="{{ file_hash('js/vditor/dist/index.css') }}">
 @endsection
